@@ -34,15 +34,15 @@ export default function SignUpPage() {
 
     setLoading(true);
     try {
-      const { data } = await signUp({ email, password });
+      const data = await signUp({ email, password });
       
       // 이메일 확인이 필요한 경우
-      if (data?.user && !data.session) {
+      if (data.user && !data.session) {
         alert('회원가입이 완료되었습니다! 이메일을 확인하여 계정을 활성화해주세요.');
         router.push('/login');
       } 
       // 이메일 확인 없이 바로 로그인되는 경우
-      else if (data?.session) {
+      else if (data.session) {
         alert('회원가입이 완료되었습니다!');
         router.push('/');
         router.refresh();

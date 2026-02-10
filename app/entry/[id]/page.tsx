@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { getEntry, deleteEntry } from '@/lib/supabase/queries';
 import { formatDate } from '@/lib/utils';
 import type { Entry } from '@/types/entry';
@@ -49,18 +50,14 @@ export default function EntryDetailPage({ params }: { params: Promise<{ id: stri
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500">로딩 중...</p>
-      </div>
-    );
-  }
-
-  if (!entry) return null;
-
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <ProtectedRoute>
+      {loading ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-gray-500">로딩 중...</p>
+        </div>
+      ) : !entry ? null : (
+        <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <Button variant="ghost" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5 mr-2" />
@@ -128,6 +125,8 @@ export default function EntryDetailPage({ params }: { params: Promise<{ id: stri
           )}
         </CardContent>
       </Card>
-    </div>
+        </div>
+      )}
+    </ProtectedRoute>
   );
 }

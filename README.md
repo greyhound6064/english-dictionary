@@ -4,6 +4,8 @@
 
 ## 기능
 
+- ✅ 사용자 인증 (회원가입/로그인)
+- ✅ 사용자별 독립된 사전
 - ✅ 단어/숙어/표현 등록
 - ✅ 설명 및 예문 입력
 - ✅ 이미지/영상 첨부
@@ -41,21 +43,39 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 Supabase 대시보드에서 다음 SQL 실행:
 
 ```sql
--- entries 테이블 생성
-CREATE TABLE entries (
+-- english_dic_entries 테이블 생성
+CREATE TABLE english_dic_entries (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   term TEXT NOT NULL,
   description TEXT NOT NULL,
   source TEXT,
   media_urls TEXT[],
+  user_id UUID REFERENCES auth.users(id) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 인덱스 생성
-CREATE INDEX idx_term_search ON entries USING gin(to_tsvector('english', term));
-CREATE INDEX idx_created_at ON entries(created_at DESC);
-CREATE INDEX idx_term_alphabetical ON entries(term);
+CREATE INDEX idx_english_dic_term_search ON english_dic_entries USING gin(to_tsvector('english', term));
+CREATE INDEX idx_english_dic_created_at ON english_dic_entries(created_at DESC);
+CREATE INDEX idx_english_dic_term_alphabetical ON english_dic_entries(term);
+CREATE INDEX idx_english_dic_entries_user_id ON english_dic_entries(user_id);
+
+-- RLS 활성화
+ALTER TABLE english_dic_entries ENABLE ROW LEVEL SECURITY;
+
+-- RLS 정책
+CREATE POLICY "Users can view own english_dic_entries"
+ON english_dic_entries FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own english_dic_entries"
+ON english_dic_entries FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own english_dic_entries"
+ON english_dic_entries FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own english_dic_entries"
+ON english_dic_entries FOR DELETE TO authenticated USING (auth.uid() = user_id);
 
 -- 자동 업데이트 트리거
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -66,8 +86,8 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
-CREATE TRIGGER update_entries_updated_at 
-BEFORE UPDATE ON entries 
+CREATE TRIGGER update_english_dic_entries_updated_at 
+BEFORE UPDATE ON english_dic_entries 
 FOR EACH ROW 
 EXECUTE FUNCTION update_updated_at_column();
 ```

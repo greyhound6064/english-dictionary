@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { EntryForm } from '@/components/EntryForm';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { getEntry } from '@/lib/supabase/queries';
 import type { Entry } from '@/types/entry';
 import { use } from 'react';
@@ -30,20 +31,18 @@ export default function EditEntryPage({ params }: { params: Promise<{ id: string
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500">로딩 중...</p>
-      </div>
-    );
-  }
-
-  if (!entry) return null;
-
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">항목 수정</h1>
-      <EntryForm entry={entry} mode="edit" />
-    </div>
+    <ProtectedRoute>
+      {loading ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-gray-500">로딩 중...</p>
+        </div>
+      ) : !entry ? null : (
+        <div className="max-w-3xl mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-8">항목 수정</h1>
+          <EntryForm entry={entry} mode="edit" />
+        </div>
+      )}
+    </ProtectedRoute>
   );
 }

@@ -45,23 +45,29 @@ english-dictionary/
 
 ## 데이터베이스 스키마
 
-### entries 테이블
+### english_dic_entries 테이블
 ```sql
-CREATE TABLE entries (
+CREATE TABLE english_dic_entries (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   term TEXT NOT NULL,                    -- 단어/숙어/표현
   description TEXT NOT NULL,             -- 설명
   source TEXT,                           -- 출처/원문
   media_urls TEXT[],                     -- 이미지/영상 URL 배열
+  user_id UUID REFERENCES auth.users(id) NOT NULL, -- 사용자 ID
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
 ### 인덱스
-- `idx_term_search`: 검색 최적화 (GIN 인덱스)
-- `idx_created_at`: 최신순 정렬
-- `idx_term_alphabetical`: 알파벳순 정렬
+- `idx_english_dic_term_search`: 검색 최적화 (GIN 인덱스)
+- `idx_english_dic_created_at`: 최신순 정렬
+- `idx_english_dic_term_alphabetical`: 알파벳순 정렬
+- `idx_english_dic_entries_user_id`: 사용자별 조회 최적화
+
+### RLS (Row Level Security)
+- 사용자는 자신이 생성한 항목만 조회/수정/삭제 가능
+- 인증된 사용자만 데이터 접근 가능
 
 ### Storage 버킷
 - **버킷명**: `entry-media`
@@ -154,7 +160,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ### 2. 데이터베이스 수정
 - Supabase 대시보드에서 SQL 실행
-- RLS(Row Level Security)는 현재 비활성화 (인증 없음)
+- RLS(Row Level Security) 활성화 (사용자별 데이터 격리)
+- 인증된 사용자만 데이터 접근 가능
 
 ### 3. 스타일 수정
 - Tailwind CSS 사용

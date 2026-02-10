@@ -86,15 +86,18 @@ http://localhost:3000 에서 확인
 
 ## 배포
 
-### Cloudflare Pages
+### Vercel (권장)
 
 1. GitHub에 코드 푸시
-2. Cloudflare Pages에서 저장소 연결
-3. 빌드 설정:
-   - Framework: Next.js
-   - Build command: `npm run build`
-   - Build output: `.next`
-4. 환경 변수 설정
+2. https://vercel.com 접속 및 로그인
+3. **New Project** 클릭
+4. GitHub 저장소 선택
+5. 환경 변수 설정:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+6. **Deploy** 클릭
+
+배포 완료 후 자동으로 URL 제공 (예: `your-project.vercel.app`)
 
 ## 프로젝트 구조
 

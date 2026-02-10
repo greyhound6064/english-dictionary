@@ -167,13 +167,18 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ## 배포
 
-### Cloudflare Pages
-1. GitHub 저장소 연결
-2. 빌드 설정:
-   - Framework: Next.js
-   - Build command: `npm run build`
-   - Build output: `.next`
-3. 환경 변수 설정 (Supabase URL, Key)
+### Vercel (권장)
+1. https://vercel.com 접속
+2. GitHub 저장소 연결
+3. 환경 변수 설정:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. 자동 배포 완료
+
+### 대안: Cloudflare Pages
+- Next.js 일부 기능 제한
+- Static export 필요
+- Vercel 사용 권장
 
 ## 향후 확장
 

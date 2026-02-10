@@ -8,8 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getEntry, deleteEntry } from '@/lib/supabase/queries';
 import { formatDate } from '@/lib/utils';
 import type { Entry } from '@/types/entry';
+import { use } from 'react';
 
-export default function EntryDetailPage({ params }: { params: { id: string } }) {
+export default function EntryDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const router = useRouter();
   const [entry, setEntry] = useState<Entry | null>(null);
   const [loading, setLoading] = useState(true);
@@ -17,11 +19,11 @@ export default function EntryDetailPage({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     loadEntry();
-  }, [params.id]);
+  }, [id]);
 
   const loadEntry = async () => {
     try {
-      const data = await getEntry(params.id);
+      const data = await getEntry(id);
       setEntry(data);
     } catch (error) {
       console.error('Failed to load entry:', error);
@@ -37,7 +39,7 @@ export default function EntryDetailPage({ params }: { params: { id: string } }) 
 
     setDeleting(true);
     try {
-      await deleteEntry(params.id);
+      await deleteEntry(id);
       router.push('/');
       router.refresh();
     } catch (error) {
